@@ -17,6 +17,14 @@ createPackage watson \
 
 waitForAll
 
+install "$CATALOG_HOME/watson/speechToText.js" \
+    watson/speechToText \
+    -a description 'Convert speech to text' \
+    -a parameters '[ {"name":"translateFrom", "required":false}, {"name":"translateTo", "required":false}, {"name":"translateParam", "required":false}, {"name":"username", "required":true, "bindTime":true}, {"name":"password", "required":true, "type":"password", "bindTime":true} ]' \
+    -a sampleInput '{"translateFrom":"en", "translateTo":"fr", "payload":"Hello", "username":"XXX", "password":"XXX"}' \
+    -a sampleOutput '{"payload":"Bonjour"}'
+
+
 install "$CATALOG_HOME/watson/translate.js" \
     watson/translate \
     -a description 'Translate text' \

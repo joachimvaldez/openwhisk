@@ -50,7 +50,7 @@ when@3.7.3 \
 superagent@1.3.0 \
 yauzl@2.3.1 \
 xml2js@0.4.15 \
-watson-developer-cloud@0.9.29 \
+watson-developer-cloud@1.4.1 \
 xml2js@0.4.15 \
 xmlhttprequest@1.7.0
 
