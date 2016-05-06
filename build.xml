@@ -54,7 +54,15 @@
         <ant antfile="core/build.xml" target="deploy" />
         <ant antfile="tools/cli/build.xml" target="buildCLI" />
         <antcall target="installCatalog" />
+        <!--<antcall target="deployCatalog" />-->
+        <!--<parallel threadCount="${deploythreads}" failonany="true">-->
+            <!--<antcall target="deployCatalog" />-->
+        <!--</parallel>-->
     </target>
+
+    <!--<target name="deployCatalog">-->
+        <!--<ant antfile="catalog/build.xml" target="deploy" />-->
+    <!--</target>-->
 
     <!-- teardown and deploy all services -->
     <target name="redeploy" depends="teardown,deploy" />

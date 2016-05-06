@@ -1,0 +1,2 @@
+ext.dockerImageName = 'catalog/rss'
+apply from: '../../../docker.gradle'

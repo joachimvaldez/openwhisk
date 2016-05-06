@@ -1,0 +1,50 @@
+<!-- vim: set expandtab ts=4 sw=4 : -->
+
+<!-- targets in this file should be called from the parent directory -->
+<project basedir="..">
+    <import file="../build.xml" />
+
+    <!-- build all components in the catalog in parallel -->
+    <target name="build">
+        <parallel threadCount="${buildthreads}" failonany="true">
+            <antcall target="buildRSSTrigger" />
+        </parallel>
+    </target>
+
+    <!-- push all components in the catalog to docker registry-->
+    <target name="push" depends="pushRSSTrigger" />
+
+    <!-- deploy all components in the catalog-->
+    <target name="deploy">
+        <parallel threadCount="${deploythreads}" failonany="true">
+            <antcall target="startRSSTrigger" />
+        </parallel>
+        <parallel threadCount="${buildthreads}" failonany="true">
+            <antcall target="waitRSS"/>
+        </parallel>
+    </target>
+
+    <!-- build the docker image for the rss trigger service -->
+    <target name="buildRSSTrigger">
+        <property name="openhome" location="${openwhisk.home}"/>
+        <ant antfile="${openhome}/catalog/providers/rssTrigger/build.xml" target="build" />
+    </target>
+
+    <!-- push the docker image for the rss trigger service -->
+    <target name="pushRSSTrigger">
+        <property name="openhome" location="${openwhisk.home}"/>
+        <ant antfile="${openhome}/catalog/providers/rssTrigger/build.xml" target="push" />
+    </target>
+
+    <!-- start the rss service -->
+    <target name="startRSSTrigger">
+        <property name="openhome" location="${openwhisk.home}"/>
+        <ant antfile="${openhome}/catalog/providers/rssTrigger/build.xml" target="start" />
+    </target>
+
+    <!-- wait up to a minute for RSS trigger to start. -->
+    <target name="waitRSS">
+        <property name="openhome" location="${openwhisk.home}"/>
+        <ant antfile="${openhome}/catalog/providers/rssTrigger/build.xml" target="wait" />
+    </target>
+</project>

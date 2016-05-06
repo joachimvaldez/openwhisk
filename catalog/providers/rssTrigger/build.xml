@@ -1,0 +1,58 @@
+<!-- vim: set expandtab ts=4 sw=4 : -->
+
+<!-- targets in this file should be called from the parent directory -->
+<project basedir="../../..">
+    <!--TODO not hardcoding-->
+    <import file="../../../../blue/build.xml" />
+    <import file="../../../../blue/core/deploy.xml" />
+
+    <!-- build the docker image for the rss trigger service -->
+    <target name="build" >
+        <!-- build image -->
+        <exec executable="/bin/bash" failonerror="true" dir="catalog/providers/rssTrigger">
+            <arg line="${openwhisk.home}/tools/docker/dockerWithRetry.sh ${docker.timeout.long} --host tcp://${main.docker.endpoint}" />
+            <arg line="${docker.tls.cmd}" />
+            <arg line="build -t catalog/rss ." />
+        </exec>
+
+        <!-- clean up -->
+        <delete dir="${rss.scratch}" />
+    </target>
+
+    <!-- push the docker image for the rss trigger service -->
+    <target name="push" >
+        <!-- push image -->
+        <antcall target="pushImageToRegistry">
+            <param name="docker.endpoint" value="${main.docker.endpoint}" />
+            <param name="docker.image.to.push" value="catalog/rss" />
+        </antcall>
+    </target>
+
+    <!-- start the rss service -->
+    <target name="start" >
+        <antcall target="pullImageFromRegistry">
+            <param name="docker.image.to.pull" value="catalog/rss" />
+            <param name="docker.endpoint" value="${catalog.docker.endpoint}" />
+        </antcall>
+        <exec executable="docker" failonerror="true">
+            <arg line="--host tcp://${catalog.docker.endpoint}" />
+            <arg line="${docker.tls.cmd}" />
+            <arg value="run" />
+            <arg line="${docker.restart.opts}" />
+            <arg line="-v ${whisk.logs.dir}/rssTrigger:/logs" />
+            <arg line="-e &quot;PORT=${rss.docker.port}&quot;" />
+            <arg line="-e &quot;ROUTER_HOST=${router.host}&quot;" />
+            <arg line="-e &quot;CLOUDANT_USERNAME=${db.username}&quot;" />
+            <arg line="-e &quot;CLOUDANT_PASSWORD=${db.password}&quot;" />
+            <arg line="-e &quot;DB_PREFIX=${db.prefix}&quot;" />
+            <arg line="-d --name catalog_rss -p ${rss.host.port}:${rss.docker.port} ${docker.registry}catalog/rss:${docker.image.tag}" />
+        </exec>
+    </target>
+
+    <!-- wait up to a minute for rss trigger to start.  Usually takes <5 sec -->
+    <!--TODO Do a health check. See alarms. -->
+
+    <target name="wait">
+    </target>
+
+</project>

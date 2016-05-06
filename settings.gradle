@@ -13,6 +13,8 @@ include 'services:kafka'
 include 'services:registrator'
 include 'services:zookeeper'
 
+include 'catalog:providers:rssTrigger'
+
 include 'tools:cli'
 
 include 'tests'
